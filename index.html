@@ -1,40 +1,87 @@
 ﻿<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>写真アップロード</title>
+  <meta charset="UTF-8">
+  <title>写真アップロード（10桁ID紐づけ）</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    label { display: block; margin-top: 10px; }
+    input, button { margin-top: 5px; padding: 8px; }
+    #preview { margin-top: 10px; max-width: 300px; display: none; }
+    #result { margin-top: 15px; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h2>写真アップロード（10桁ID紐づけ）</h2>
+  <h2>写真アップロード</h2>
   <form id="uploadForm">
-    <label>10桁の数字ID: 
+    <label>
+      10桁の数字ID:
       <input type="text" id="id" maxlength="10" required>
-    </label><br>
-    <input type="file" id="file" accept="image/*;capture=camera" required><br>
+    </label>
+    <label>
+      写真を選択または撮影:
+      <input type="file" id="file" accept="image/*;capture=camera" required>
+    </label>
+    <img id="preview" alt="プレビュー">
     <button type="submit">アップロード</button>
   </form>
   <div id="result"></div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwf21uJN2wN373KXHIHrthVoCVLmCW0oEkaDdk4PtOuErC7yEm_OTwpTpEoaVg1Cmk/exec";
+    // あなたのApps Script WebアプリのURLに置き換えてください
+    const WEB_APP_URL = "YOUR_WEB_APP_URL";
 
+    // プレビュー表示
+    document.getElementById('file').addEventListener('change', () => {
+      const file = document.getElementById('file').files[0];
+      const preview = document.getElementById('preview');
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    // フォーム送信処理
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const id = document.getElementById('id').value;
+      const id = document.getElementById('id').value.trim();
       const file = document.getElementById('file').files[0];
+      const result = document.getElementById('result');
 
+      // IDチェック
       if (!/^\d{10}$/.test(id)) {
-        alert("IDは10桁の数字で入力してください");
+        result.textContent = "エラー: IDは10桁の数字で入力してください";
+        result.style.color = "red";
+        return;
+      }
+      if (!file) {
+        result.textContent = "エラー: 写真ファイルを選択してください";
+        result.style.color = "red";
         return;
       }
 
+      // FormDataで送信
       const formData = new FormData();
       formData.append("id", id);
       formData.append("file", file);
 
-      const res = await fetch(WEB_APP_URL, { method: "POST", body: formData });
-      const text = await res.text();
-      document.getElementById('result').innerText = text;
+      result.textContent = "アップロード中...";
+      result.style.color = "black";
+
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: "POST",
+          body: formData
+        });
+        const text = await res.text();
+        result.textContent = text;
+        result.style.color = "green";
+      } catch (err) {
+        result.textContent = "エラー: " + err.message;
+        result.style.color = "red";
+      }
     });
   </script>
 </body>
