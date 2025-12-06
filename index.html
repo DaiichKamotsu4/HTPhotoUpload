@@ -57,12 +57,15 @@
         return;
       }
 
-      // Fileチェック
+      // Fileチェック1
+      const fileInput = document.getElementById('file');
       const fileT = fileInput.files[0];
       if (!fileT) {
         alert("写真ファイルが選択されていません");
         return;
       }
+
+      // Fileチェック2
       if (!file) {
         result.textContent = "エラー: 写真ファイルを選択してください";
         result.style.color = "red";
