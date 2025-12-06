@@ -56,6 +56,13 @@
         result.style.color = "red";
         return;
       }
+
+      // Fileチェック
+      const fileT = fileInput.files[0];
+      if (!fileT) {
+        alert("写真ファイルが選択されていません");
+        return;
+      }
       if (!file) {
         result.textContent = "エラー: 写真ファイルを選択してください";
         result.style.color = "red";
