@@ -1,0 +1,41 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>写真アップロード</title>
+</head>
+<body>
+  <h2>写真アップロード（10桁ID紐づけ）</h2>
+  <form id="uploadForm">
+    <label>10桁の数字ID: 
+      <input type="text" id="id" maxlength="10" required>
+    </label><br>
+    <input type="file" id="file" accept="image/*;capture=camera" required><br>
+    <button type="submit">アップロード</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwf21uJN2wN373KXHIHrthVoCVLmCW0oEkaDdk4PtOuErC7yEm_OTwpTpEoaVg1Cmk/exec";
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('id').value;
+      const file = document.getElementById('file').files[0];
+
+      if (!/^\d{10}$/.test(id)) {
+        alert("IDは10桁の数字で入力してください");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("file", file);
+
+      const res = await fetch(WEB_APP_URL, { method: "POST", body: formData });
+      const text = await res.text();
+      document.getElementById('result').innerText = text;
+    });
+  </script>
+</body>
+</html>
